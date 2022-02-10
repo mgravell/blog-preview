@@ -39,26 +39,70 @@ So: if you're currently using Redis-64, how can we resolve this, without complet
 
 ## Shout-out: Memurai
 
-The simplest way out of this corner is, in my opinion: Memurai, by Janea Systems. So: what is Memurai? To put it simply: Memurai is a redis 5 compatible fork of redis that runs natively on Windows. That means you get a wide range of more recent redis fixes and features. Fortunately, it is [a breeze to install](https://www.memurai.com/blog/install-redis-windows-alternatives-such-as-memurai), with options for [nuget](https://www.nuget.org/packages/MemuraiDeveloper/), [choco/cinst](https://community.chocolatey.org/packages/memurai-developer/), [winget](https://winget.run/pkg/Memurai/MemuraiDeveloper), [winstall](https://winstall.app/apps/Memurai.MemuraiDeveloper) and [an installer](https://www.memurai.com/get-memurai). This means that you can get started with a Memurai development installation immediately. The obsolete Redis-64 nuget package also now carries a link to Memurai in the  "Suggested Alternatives", which is encouraging. To be transparent: I need to emphasize - Memurai is a commercial offering with a free developer edition. If we look at how Redis-64 ultimately stagnated, I view this as a strength: it means that someone has a vested interest in making sure that the product continues to evolve and be supported, now and into the future.
+The simplest way out of this corner is, in my opinion: Memurai, by Janea Systems. So: what is Memurai? To put it simply: Memurai is a redis 5 compatible fork of redis that runs natively on Windows. That means you get a wide range of more recent redis fixes and features. Fortunately, it is [a breeze to install](https://www.memurai.com/blog/install-redis-windows-alternatives-such-as-memurai), with options for [nuget](https://www.nuget.org/packages/MemuraiDeveloper/), [choco/cinst](https://community.chocolatey.org/packages/memurai-developer/), [winget](https://winget.run/pkg/Memurai/MemuraiDeveloper), [winstall](https://winstall.app/apps/Memurai.MemuraiDeveloper) and [an installer](https://www.memurai.com/get-memurai). This means that you can get started with a Memurai development installation immediately.
+
+The obsolete Redis-64 nuget package also now carries a link to Memurai in the  "Suggested Alternatives", which is encouraging. To be transparent: I need to emphasize - Memurai is a commercial offering with a free developer edition. If we look at how Redis-64 ultimately stagnated, I view this as a strength: it means that someone has a vested interest in making sure that the product continues to evolve and be supported, now and into the future.
 
 ## Working with Memurai
 
-As previously noted: installation is quick and simple, but so is working with it. The command-line tools change nominally; instead of `redis-cli`, we have `memurai-cli`; instead of `redis-server` we have `memurai`. However, they work exactly as you expect and will be immediately familar to anyone who has used redis. At the server level, Memurai surfaces the exact same protocol and API surface as a vanilla redis server, for example:
+As previously noted: installation is quick and simple, but so is working with it. The command-line tools change nominally; instead of `redis-cli`, we have `memurai-cli`; instead of `redis-server` we have `memurai`. However, they work exactly as you expect and will be immediately familar to anyone who has used redis. At the server level, Memurai surfaces the exact same protocol and API surface as a vanilla redis server, meaning any existing redis-compatible tools and clients should work without problem:
 
 
 ``` txt
-TODO: example showing some redis-cli love
+c:\Code>memurai-cli
+127.0.0.1:6379> get foo
+(nil)
+127.0.0.1:6379> set foo bar
+OK
+127.0.0.1:6379> get bar
+(nil)
+127.0.0.1:6379>
 ```
 
-At the metadata level, you may notice that `info server` reports a new entry:
+(note that `redis-cli` would have worked identically)
+
+At the metadata level, you may notice that `info server` reports some additional antries:
 
 ``` txt
-redis-version    5.0314fdwkljxcvlkj cx
-memurai-version  TODO: show real value
+127.0.0.1:6379> info server
+# Server
+memurai_edition:Memurai Developer
+memurai_version:2.0.5
+redis-version:5.0.14
+...
 ```
 
-The `redis-version` entry is present so that client libraries and applications expecting this entry can understand the features available, so this is effectively the redis API compatibility level. Since the redis API has had a high degree of backwards compatibility, this all combines to mean that applications that work today against Redis-64 should work *without changes* against Memurai, while also having options to use newer redis capabilities.
+The `redis_version` entry is present so that client libraries and applications expecting this entry can understand the features available, so this is effectively the redis API compatibility level; the `memurai_version` and `memurai_edition` give specific Memurai information, if you need it - but other than those additions (and extra rows are expected here), everything works as you would expect. For example, we can use any pre-existing redis client to talk to the server:
+
+``` c#
+using StackExchange.Redis;
+
+// connect to local redis, default port
+using var conn = await ConnectionMultiplexer.ConnectAsync("127.0.0.1");
+var db = conn.GetDatabase();
+
+// reset and populate some data
+await db.KeyDeleteAsync("mykey");
+for (int i = 1; i <= 20; i++)
+{
+    await db.StringIncrementAsync("mykey", i);
+}
+
+// fetch and display
+var sum = (int)await db.StringGetAsync("mykey");
+Console.WriteLine(sum); // writes: 210
+```
+
+Configuring the server works exactly like it does for redis - the config file works the same, although the example template is named differently:
+
+```
+c:\Code>where memurai
+C:\Program Files\Memurai\memurai.exe
+
+c:\Code>dir "C:\Program Files\Memurai\*.conf" /B
+memurai.conf
+```
 
 ## Summary
 
-Putting this all together: if you're currently using Redis-64 to run a redis server natively on Windows, then Memurai might make a very appealing option - almost certainly more appealing than remaining on the long-obsolete Redis-64. 
+Putting this all together: if you're currently using Redis-64 to run a redis server natively on Windows, then Memurai might make a very appealing option - almost certainly more appealing than remaining on the long-obsolete Redis-64. All of your existing redis knowledge continues to apply, but you get a wide range of features that were added to redis after Redis-64 was last maintained.
