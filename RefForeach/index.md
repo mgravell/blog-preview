@@ -1,4 +1,4 @@
-# Unusual optimizations; ref foreach and returns
+# Unusual optimizations; ref foreach and ref returns
 
 A really interesting feature quietly slipped into C# 7.3 - interesting to me, at least - but which I've seen almost no noise about. As I've said many times before: I have niche interests - I spend a lot of time in library code, or acting in a consulting capacity on performance tuning application code - so in both capacities, I tend to look at performance tweaks that *aren't usually needed*, but when they are: they're **glorious**. As I say: I haven't seen this discussed a lot, so: "be the change you want to see" - here's my attempt to sell you on the glory of `ref foreach`.
 
