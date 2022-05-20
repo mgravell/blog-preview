@@ -22,7 +22,7 @@ Because I know folks have a short attention span, I'll start with the money shot
 |    CustomSpanForeachLoop |   816.1 ns |      - |         - |
 | CustomSpanRefForeachLoop |   592.2 ns |      - |         - |
 
-With the point being: I want to sell you on those sub-600 nanosecond versions, rather than the multi-millisecond versions *of the same operation*.
+With the point being: I want to sell you on those sub-600 nanosecond versions, rather than the multi-microsecond versions *of the same operation*.
 
 
 # What the hell is `ref foreach`?
