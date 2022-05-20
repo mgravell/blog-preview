@@ -115,10 +115,10 @@ Our use of `ref var tmp` with `foreach` here means that the L-value (`tmp`) is a
 If you look carefully, the indexer on a span is not `T this[int index]`, but rather: `ref T this[int index]` (or `ref readonly T this[int index]` for `ReadOnlySpan<T>`), so we can also use a `for` loop, and avoid copying the data at any point:
 
 ``` c#
-var span = CollectionsMarshal.AsSpan(_list);
+var span = CollectionsMarshal.AsSpan(someList);
 for (int i = 0; i < span.Length; i++)
 {
-    total += span[i].SomeValue;
+    span[i].DoSomething();
 }
 ```
 
