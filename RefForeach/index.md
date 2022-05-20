@@ -110,7 +110,7 @@ foreach (ref var tmp in CollectionsMarshal.AsSpan(someList))
 }
 ```
 
-Our use of `ref var tmp` with `foreach` here means that the L-value (`tmp`) is a *managed pointer* to the data - not the data itself; we have avoided copying the overweight value-type, and called the value in-place.
+Our use of `ref var tmp` with `foreach` here means that the L-value (`tmp`) is a *managed pointer* to the data - not the data itself; we have avoided copying the overweight value-type, and called the method in-place.
 
 If you look carefully, the indexer on a span is not `T this[int index]`, but rather: `ref T this[int index]` (or `ref readonly T this[int index]` for `ReadOnlySpan<T>`), so we can also use a `for` loop, and avoid copying the data at any point:
 
@@ -124,7 +124,7 @@ for (int i = 0; i < span.Length; i++)
 
 # Generalizing this
 
-Sometimes, spans aren't vialbe either - for whatever reason. The good news is: we can do the exact same thing with our own types, in two ways:
+Sometimes, spans aren't viable either - for whatever reason. The good news is: we can do the exact same thing with our own types, in two ways:
 
 1. we can write our own types with an indexer that returns a `ref` or `ref readonly` managed pointer to the real data
 2. we can write our own *iterator* types with a `ref` or `ref readonly` return value on `Current`; this won't satisfy `IEnumerator<T>`, but the *compiler* isn't limited to `IEnumerator<T>`, and if you're writing a custom iterator (rather than using a `yield return` iterator block): you're probably using a custom value-type iterator and *avoiding* the interface to make sure it never gets boxed accidentally, so: nothing is lost!
