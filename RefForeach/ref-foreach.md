@@ -157,6 +157,8 @@ which would provide `foreach` access *almost* as good as a direct span. If the c
 
 In modern C#, we have a range of tricks that can help in certain niche scenarios relating to sequences of - in particular - value types. These scenarios don't apply to everyone, *and that's fine*. If you never need to use any of the above: **that's great**, and good luck to you. But when you *do* need them, they are *incredibly* powerful and versatile, and a valuable tool in the optimizer's toolbox.
 
+The benchamrk code used for the table at the start of the post [is included here](https://github.com/mgravell/blog-preview/tree/main/RefForeach).
+
  
 
 
